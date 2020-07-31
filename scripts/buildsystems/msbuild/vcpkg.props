@@ -34,7 +34,7 @@
 
   <!-- Set other defaults-->
   <PropertyGroup>
-    <VcpkgUserTriplet Condition="'$(VcpkgUserTriplet)' == ''">$(VcpkgPlatformTarget)-$(VcpkgOSTarget)</VcpkgUserTriplet>
+    <VcpkgUserTriplet Condition="'$(VcpkgUserTriplet)' == ''">$(VCPKG_DEFAULT_TRIPLET)</VcpkgUserTriplet>
     <VcpkgTriplet Condition="'$(VcpkgTriplet)' == ''">$(VcpkgUserTriplet)</VcpkgTriplet>
     <VcpkgPageSchema>$(VcpkgRoot)\scripts\buildsystems\msbuild\vcpkg-general.xml</VcpkgPageSchema>
   </PropertyGroup>
