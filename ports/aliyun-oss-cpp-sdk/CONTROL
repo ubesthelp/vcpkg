@@ -1,0 +1,5 @@
+Source: aliyun-oss-cpp-sdk
+Version: 1.8.2
+Description: Alibaba Cloud Object Storage Service (OSS) is a cloud storage service provided by Alibaba Cloud, featuring massive capacity, security, a low cost, and high reliability.
+Build-Depends: curl, openssl
+Supports: !uwp
