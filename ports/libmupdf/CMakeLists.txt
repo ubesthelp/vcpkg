@@ -2,12 +2,23 @@ cmake_minimum_required(VERSION 3.9)
 project(libmupdf C)
 
 set(CMAKE_DEBUG_POSTFIX d)
+set(coffs)
 
 if(WIN32)
-  execute_process(
-    COMMAND "cmd.exe" "/c" "platform\\win32\\generate.bat"
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-  )
+  add_executable(bin2coff "scripts/bin2coff.c")
+  file(GLOB_RECURSE FONTS "resources/fonts/*.[otc][ft][cf]")
+  foreach(f ${FONTS})
+    get_filename_component(fn "${f}" NAME_WE)
+    get_filename_component(fx "${f}" EXT)
+    string(SUBSTRING "${fx}" 1 -1 fx)
+    add_custom_command(OUTPUT "${fn}_${fx}.obj"
+        COMMAND bin2coff "${f}" "${fn}_${fx}.obj" "_binary_${fn}_${fx}" ${VCPKG_TARGET_ARCHITECTURE}
+        MAIN_DEPENDENCY "${f}"
+        COMMENT "Generating coff for ${fn}.${fx}"
+        VERBATIM
+    )
+    list(APPEND coffs "${fn}_${fx}.obj")
+  endforeach()
 else()
   find_program(MAKE_EXE NAMES make REQUIRED)
   execute_process(
@@ -29,7 +40,7 @@ file(GLOB_RECURSE SOURCES "source/*.c" "generated/*.c")
 list(FILTER SOURCES EXCLUDE REGEX "source/tools/[a-z]*\\.c$")
 list(FILTER SOURCES EXCLUDE REGEX "source/tests/.*.c$")
 
-add_library(libmupdf ${SOURCES})
+add_library(libmupdf ${SOURCES} ${coffs})
 
 if(WIN32)
   target_compile_definitions(libmupdf PRIVATE -DSHARE_JPEG -DFZ_ENABLE_JS=0 -DFZ_ENABLE_ICC=0)
