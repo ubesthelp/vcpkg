@@ -1,0 +1,24 @@
+diff --git a/src/sprtf.c b/src/sprtf.c
+--- a/src/sprtf.c	2019-07-09 02:52:14.000000000 +0800
++++ b/src/sprtf.c	2020-11-17 16:33:29.654012300 +0800
+@@ -180,7 +180,7 @@
+ }
+ 
+ #ifdef _MSC_VER
+-int gettimeofday(struct timeval *tp, void *tzp)
++static int gettimeofday(struct timeval *tp, void *tzp)
+ {
+ #ifdef WIN32
+     struct _timeb timebuffer;
+diff --git a/src/sprtf.h b/src/sprtf.h
+--- a/src/sprtf.h	2020-11-17 16:33:20.469699400 +0800
++++ b/src/sprtf.h	2020-11-17 16:33:25.560193400 +0800
+@@ -84,7 +84,7 @@
+ TIDY_EXPORT char *get_date_time_stg(void);
+ 
+ #ifdef _MSC_VER
+-TIDY_EXPORT int gettimeofday(struct timeval *tp, void *tzp);
++//TIDY_EXPORT int gettimeofday(struct timeval *tp, void *tzp);
+ #endif
+ 
+ #  define DEBUG_LOG(ARG) do { ARG; } while(0)
