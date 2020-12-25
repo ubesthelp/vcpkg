@@ -26,20 +26,6 @@
 
 namespace
 {
-#if defined(_WIN32)
-    struct IsSlash
-    {
-        bool operator()(const wchar_t c) const noexcept { return c == L'/' || c == L'\\'; }
-    };
-#else
-    struct IsSlash
-    {
-        bool operator()(const char c) const noexcept { return c == '/'; }
-    };
-#endif
-
-    constexpr IsSlash is_slash;
-
     struct NativeStringView
     {
         const fs::path::value_type* first;
@@ -478,6 +464,14 @@ namespace vcpkg::Files
         std::error_code ec;
         this->write_contents(path, data, ec);
         if (ec) Checks::exit_with_message(linfo, "error writing file: %s: %s", fs::u8string(path), ec.message());
+    }
+    void Filesystem::write_contents_and_dirs(const fs::path& path, const std::string& data, LineInfo linfo)
+    {
+        std::error_code ec;
+        this->write_contents_and_dirs(path, data, ec);
+        if (ec)
+            Checks::exit_with_message(
+                linfo, "error writing file and creating directories: %s: %s", fs::u8string(path), ec.message());
     }
     void Filesystem::rename(const fs::path& oldpath, const fs::path& newpath, LineInfo linfo)
     {
@@ -1163,6 +1157,22 @@ namespace vcpkg::Files
             }
         }
 
+        virtual void write_contents_and_dirs(const fs::path& file_path,
+                                             const std::string& data,
+                                             std::error_code& ec) override
+        {
+            write_contents(file_path, data, ec);
+            if (ec)
+            {
+                create_directories(file_path.parent_path(), ec);
+                if (ec)
+                {
+                    return;
+                }
+                write_contents(file_path, data, ec);
+            }
+        }
+
         virtual fs::path absolute(const fs::path& path, std::error_code& ec) const override
         {
 #if VCPKG_USE_STD_FILESYSTEM
@@ -1206,7 +1216,7 @@ namespace vcpkg::Files
             {
             }
 
-#if defined(WIN32)
+#if defined(_WIN32)
             void assign_busy_error(std::error_code& ec) { ec.assign(ERROR_BUSY, std::system_category()); }
 
             bool operator()(std::error_code& ec)
@@ -1232,7 +1242,7 @@ namespace vcpkg::Files
                 res.system_handle = reinterpret_cast<intptr_t>(handle);
                 return true;
             }
-#else // ^^^ WIN32 / !WIN32 vvv
+#else // ^^^ _WIN32 / !_WIN32 vvv
             int fd = -1;
 
             void assign_busy_error(std::error_code& ec) { ec.assign(EBUSY, std::generic_category()); }
@@ -1242,7 +1252,7 @@ namespace vcpkg::Files
                 ec.clear();
                 if (fd == -1)
                 {
-                    fd = ::open(native.c_str(), 0);
+                    fd = ::open(native.c_str(), O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
                     if (fd < 0)
                     {
                         ec.assign(errno, std::generic_category());
@@ -1325,7 +1335,7 @@ namespace vcpkg::Files
 
         virtual void unlock_file_lock(fs::SystemHandle handle, std::error_code& ec) override
         {
-#if defined(WIN32)
+#if defined(_WIN32)
             if (CloseHandle(reinterpret_cast<HANDLE>(handle.system_handle)) == 0)
             {
                 ec.assign(GetLastError(), std::system_category());
