@@ -18,6 +18,7 @@
     <VcpkgEnabled Condition="'$(VcpkgEnabled)' == ''">true</VcpkgEnabled>
     <VcpkgConfiguration Condition="'$(VcpkgConfiguration)' == ''">$(Configuration)</VcpkgConfiguration>
     <VcpkgUseStatic Condition="'$(VcpkgUseStatic)' == ''">false</VcpkgUseStatic>
+    <VcpkgTriplet Condition="'$(VcpkgTriplet)' == ''">$(VCPKG_DEFAULT_TRIPLET)</VcpkgTriplet>
     <VcpkgRoot Condition="'$(VcpkgRoot)' == ''">$([System.IO.Path]::Combine($(MSBuildThisFileDirectory), '..\..\..'))</VcpkgRoot>
 
     <VcpkgAutoLink Condition="'$(VcpkgAutoLink)' == ''">true</VcpkgAutoLink>
