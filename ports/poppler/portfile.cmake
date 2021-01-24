@@ -1,0 +1,37 @@
+vcpkg_from_github(
+    OUT_SOURCE_PATH SOURCE_PATH
+    REPO freedesktop/poppler
+    REF poppler-21.01.0
+    SHA512 ccb15581f61c90300ae3c52d5456cd4627bec429743f6e1efcedc51d75aafa79cc017a153c5a9681e1e6e4a3fc4eae3b6e2f0764254ddf43d3822b88250f5fb7
+    HEAD_REF master
+    PATCHES qt5-static.patch
+)
+
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/FindBrotliDec.cmake DESTINATION ${SOURCE_PATH}/cmake/modules)
+
+vcpkg_configure_cmake(
+    SOURCE_PATH "${SOURCE_PATH}"
+    DISABLE_PARALLEL_CONFIGURE
+    PREFER_NINJA
+    OPTIONS
+        -DBUILD_EXAMPLES=OFF
+        -DENABLE_UTILS=OFF
+        -DENABLE_CPP=OFF
+        -DENABLE_QT6=OFF
+        -DBUILD_CPP_TESTS=OFF
+        -DRUN_GPERF_IF_PRESENT=OFF
+        -DENABLE_GLIB=OFF
+        -DENABLE_LIBCURL=OFF
+        -DBUILD_QT5_TESTS=OFF
+        -DBUILD_QT6_TESTS=OFF
+        -DBUILD_GTK_TESTS=OFF
+        -DENABLE_GOBJECT_INTROSPECTION=OFF 
+)
+
+vcpkg_install_cmake()
+
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
+
+vcpkg_copy_pdbs()
+
+file(INSTALL ${SOURCE_PATH}/COPYING DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)

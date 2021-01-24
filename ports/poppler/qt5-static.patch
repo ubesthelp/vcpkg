@@ -1,0 +1,61 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index cf88eef..b9bd567 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -129,6 +129,8 @@ set(GTK_REQUIRED "3.8")
+ set(GDK_PIXBUF_REQUIRED "2.8")
+ 
+ find_package(Freetype REQUIRED)
++find_package(BrotliDec REQUIRED)
++find_package(BZip2 REQUIRED)
+ if(WITH_FONTCONFIGURATION_FONTCONFIG)
+   find_package(Fontconfig REQUIRED)
+ endif()
+@@ -434,7 +436,7 @@ set(poppler_SRCS
+   poppler/CertificateInfo.cc
+   poppler/BBoxOutputDev.cc
+ )
+-set(poppler_LIBS ${FREETYPE_LIBRARIES})
++set(poppler_LIBS ${FREETYPE_LIBRARIES} ${BROTLIDEC_LIBRARIES} BZip2::BZip2)
+ if(ENABLE_SPLASH)
+   set(poppler_SRCS ${poppler_SRCS}
+     poppler/SplashOutputDev.cc
+@@ -575,7 +577,7 @@ if(MINGW AND BUILD_SHARED_LIBS)
+     get_target_property(POPPLER_SOVERSION poppler SOVERSION)
+     set_target_properties(poppler PROPERTIES SUFFIX "-${POPPLER_SOVERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}")
+ endif()
+-target_link_libraries(poppler LINK_PRIVATE ${poppler_LIBS})
++target_link_libraries(poppler PUBLIC ${poppler_LIBS})
+ if(CMAKE_USE_PTHREADS_INIT)
+    target_link_libraries(poppler LINK_PRIVATE Threads::Threads)
+ endif()
+diff --git a/qt5/CMakeLists.txt b/qt5/CMakeLists.txt
+index 58b42f5..85dfee8 100644
+--- a/qt5/CMakeLists.txt
++++ b/qt5/CMakeLists.txt
+@@ -5,6 +5,10 @@ if(ENABLE_QT_STRICT_ITERATORS)
+   add_definitions(-DQT_STRICT_ITERATORS)
+ endif()
+ 
++if(NOT BUILD_SHARED_LIBS)
++    add_definitions(-DPOPPLER_QT5_STATIC)
++endif()
++
+ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050500)
+ add_definitions(-DQT_NO_DEPRECATED_WARNINGS)
+ 
+diff --git a/qt5/src/poppler-export.h b/qt5/src/poppler-export.h
+index 597eccf..f41d6fd 100644
+--- a/qt5/src/poppler-export.h
++++ b/qt5/src/poppler-export.h
+@@ -13,7 +13,9 @@
+ #    define _POPPLER_QT5_LIB_IMPORT
+ #endif
+ 
+-#ifdef poppler_qt5_EXPORTS
++#if defined(POPPLER_QT5_STATIC)
++#    define POPPLER_QT5_EXPORT
++#elif defined(poppler_qt5_EXPORTS)
+ #    define POPPLER_QT5_EXPORT _POPPLER_QT5_LIB_EXPORT
+ #else
+ #    define POPPLER_QT5_EXPORT _POPPLER_QT5_LIB_IMPORT

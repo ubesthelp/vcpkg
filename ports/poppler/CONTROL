@@ -1,0 +1,5 @@
+Source: poppler
+Version: 21.01.0
+Build-Depends: freetype, libjpeg-turbo, zlib, openjpeg, lcms, bzip2
+Homepage: https://poppler.freedesktop.org/
+Description: Poppler is a PDF rendering library based on the xpdf-3.0 code base.
