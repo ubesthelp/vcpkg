@@ -1,5 +1,3 @@
-include(vcpkg_common_functions)
-
 if(VCPKG_CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
     message(FATAL_ERROR "${PORT} does not currently support UWP")
 endif()
@@ -7,8 +5,8 @@ endif()
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO ubesthelp/kaixin-native
-    REF 1.2.0
-    SHA512 ba1015046d9f86e9843c6acb64a32749a22ac1e431742da4cd92440bb79a84e36b66fd522ed6c2fef6bfb91652ff49cb1484af0a2cd14efd4e41fc69b00960c5
+    REF 1.2.1
+    SHA512 5cff9f113c8727864cc455b75c8d0ff0883f614db49d8019626e582e53f98be1316b99c9463bc6fd9147bd7fdbb25d8fc8636096e6de7f12be35e16f75896022
     HEAD_REF develop
 )
 
