@@ -5,8 +5,8 @@ endif()
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO ubesthelp/kaixin-native
-    REF 1.2.1
-    SHA512 5cff9f113c8727864cc455b75c8d0ff0883f614db49d8019626e582e53f98be1316b99c9463bc6fd9147bd7fdbb25d8fc8636096e6de7f12be35e16f75896022
+    REF 1.3.2
+    SHA512 d687e0fe8a330737414f4bab208d263a757780a54e9bf09949b7841d4eab8aacbc584ebed2ff59a4d4b14d9c63dd27b5547da6fc7a61ad1c19085cb50b7a9e29
     HEAD_REF develop
 )
 
